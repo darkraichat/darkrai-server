@@ -1,0 +1,12 @@
+{
+  "name": "darkrai",
+  "version": "1.0.0",
+  "description": "coming soon",
+  "main": "index.js",
+  "scripts": {},
+  "license": "UNLICENSED",
+  "workspaces": [
+    "server",
+    "extension"
+  ]
+}

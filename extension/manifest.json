@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+  "name": "Darkrai",
+  "version": "1.0.0",
+  "description": "You'll know",
+  "homepage_url": "https://github.com/smit2k14/darkrai",
+  "icons": {},
+
+  "permissions": ["activeTab"],
+
+  "browser_action": {
+    "default_icon": "",
+    "default_title": "Darkrai",
+    "default_popup": "popup/choose_beast.html"
+  },
+  "web_accessible_resources": []
+}
