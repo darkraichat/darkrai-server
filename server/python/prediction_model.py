@@ -1,11 +1,15 @@
 import numpy as np
 import re
+import sys
+
 from hate_prediction import preprocess
 from hate_prediction import tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import model_from_json
-import sys
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
 
+chatbot = ChatBot('Ron Obvious')
 json_file = open("model.json", "r")
 loaded_model_json = json_file.read()
 json_file.close()
