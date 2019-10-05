@@ -1,7 +1,7 @@
 import numpy as np
 import re
-from .hate_prediction import preprocess
-from .hate_prediction import tokenizer
+from hate_prediction import preprocess
+from hate_prediction import tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import model_from_json
 import sys
