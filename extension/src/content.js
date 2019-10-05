@@ -2,8 +2,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Frame, { FrameContextConsumer } from 'react-frame-component'
+import openSocket from 'socket.io-client'
 import Begin from './components/Begin'
 import Chat from './components/Chat'
+import Context from './context/index'
 import './content.css'
 import 'shards-ui/dist/css/shards.min.css'
 
@@ -17,7 +19,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message === 'clicked_browser_action') {
     toggle()
     url = request.url
-    console.log(url)
+    sessionStorage.setItem('URL', url)
   }
 })
 
@@ -27,27 +29,43 @@ export default class Main extends React.Component {
     this.state = {
       chat: false,
     }
+    this.socket = openSocket('http://localhost:4848')
+  }
+
+  componentDidMount() {
+    this.socket.on('connect', () => {
+      console.log('Connected with socket id:', this.socket.id)
+    })
   }
 
   render() {
+    const element = this.state.chat ? (
+      <Chat socket={this.socket} />
+    ) : (
+      <Begin socket={this.socket} />
+    )
     return (
-      <Frame
-        head={[<link type="text/css" rel="stylesheet" href={cssUrl}></link>]}
+      <Context.Provider
+        value={{
+          chat: this.state.chat,
+          setChat: c => this.setState({ chat: c }),
+          messageData: this.state.messageData,
+          setMessageData: c => this.setState({ messageData: c }),
+        }}
       >
-        <FrameContextConsumer>
-          {// Callback is invoked with iframe's window and document instances
-          ({ document, window }) => {
-            // Render Children
-            document.body.style = 'background-color: #282c34;'
-            return (
-              <div>
-                <Begin url={url} />
-                {/* <Chat></Chat> */}
-              </div>
-            )
-          }}
-        </FrameContextConsumer>
-      </Frame>
+        <Frame
+          head={[<link type="text/css" rel="stylesheet" href={cssUrl}></link>]}
+        >
+          <FrameContextConsumer>
+            {// Callback is invoked with iframe's window and document instances
+            ({ document, window }) => {
+              // Render Children
+              document.body.style = 'background-color: #282c34;'
+              return <div>{element}</div>
+            }}
+          </FrameContextConsumer>
+        </Frame>
+      </Context.Provider>
     )
   }
 }

@@ -1,4 +1,4 @@
-console.log('frontend running ')
+console.log('frontend running')
 
 let socket = io()
 

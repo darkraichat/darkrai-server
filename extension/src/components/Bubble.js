@@ -1,17 +1,16 @@
 import React from 'react'
+import './Bubble.css'
 
 export default props => {
+  const color = props.user ? 'cyan' : 'white'
   return (
     <span
       style={{
-        backgroundColor: 'white',
-        padding: 5,
-        borderRadius: 20,
-        color: '#282c34',
+        padding: 4,
+        color,
       }}
     >
-      <p>{props.content}</p>
-      <span style={{ float: 'left' }}>{props.by}</span>
+      {props.by}: {props.content}
     </span>
   )
 }

@@ -1,39 +1,40 @@
 const express = require('express')
 const socket = require('socket.io')
 const http = require('http')
+const { connectdb } = require('./db')
 
+// Declaring the express app
 const app = express()
+
+// socket.io integration with express
 const server = http.createServer(app)
 
 const io = socket(server)
 
-const { connectdb } = require('./db')
-
-// app.use(cors())
-
+// JSON parser
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-var addMsg = async function(username, message, website) {
+const addMsg = async function(username, message, website) {
   db = await connectdb('darkrai')
   const messages = db.collection('messages')
-  const result = await messages.insertOne({
+  await messages.insertOne({
     username: username,
     message: message,
     website: website,
     date: new Date(),
   })
-  // console.log(result)
 }
+
 async function readMsgs(room) {
   db = await connectdb('darkrai')
   const messages = db.collection('messages')
+  const allMsg = []
   const msgArr = await messages
     .find({ website: room })
     .sort({ date: -1 })
     .limit(20)
     .toArray()
-  const allMsg = []
   msgArr.forEach(m => allMsg.push(m))
 
   return allMsg
@@ -42,7 +43,7 @@ async function readMsgs(room) {
 app.get('/logged', (req, res) => {
   ;(async function() {
     const m = await readMsgs(req.query.website)
-    res.send(m)
+    res.send(m.reverse())
   })()
 })
 
@@ -63,10 +64,10 @@ let rooms
   console.log(rooms)
 })()
 
-var addRoom = async function(website) {
+const addRoom = async function(website) {
   db = await connectdb('darkrai')
   const rooms = db.collection('rooms')
-  const result = await rooms.insertOne({
+  await rooms.insertOne({
     website: website,
     date: new Date(),
   })
