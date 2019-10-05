@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "coming soon",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "ext:start": "cd extension && yarn start",
+    "ext:build": "cd extension && yarn build"
+  },
   "private": true,
   "license": "UNLICENSED",
   "workspaces": [
