@@ -4,3 +4,10 @@
   "main": "index.js",
   "license": "UNLICENSED"
 }
+"dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "http": "0.0.0",
+    "mongodb": "^3.3.2",
+    "socket.io": "^2.3.0"
+  }
