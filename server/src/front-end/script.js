@@ -1,10 +1,8 @@
-console.log("frontend running ")
 
-let socket=io()
+const current_website="website_name"
+const socket = io('/'+current_website);
 
-socket.on('connected',()=>{
-    console.log(socket.id)
-})
+
 
 
 $(()=>{
@@ -18,9 +16,10 @@ $(()=>{
     inputMessage.hide()
 
     login.click(()=>{
+
         socket.emit('send_ID',{
             username:username.val(),
-            // userId=socket.id
+            website:current_website
         })
 
         $.get( "/logged", ( messages ) =>{

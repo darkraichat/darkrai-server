@@ -18,13 +18,13 @@ app.use(express.urlencoded({ extended: true }))
 
 
 
-var addMsg= async function (username,message){
+var addMsg= async function (username,message,website){
     db=await connectdb('darkrai')
     const messages=db.collection('messages')
     const result=await messages.insertOne({
             username:username,
             message:message,
-            website:"abc.com",
+            website:website,
             date:new Date()
     })
     // console.log(result)
@@ -32,7 +32,7 @@ var addMsg= async function (username,message){
 async function readMsgs() {
     db=await connectdb('darkrai')
     const messages = db.collection('messages')
-    const msgArr = await messages.find({}).sort({date: -1}).toArray()
+    const msgArr = await messages.find({}).sort({date: -1}).limit(2).toArray()
     const allMsg=[]
     msgArr.forEach((m) => allMsg.push((m)))
 
@@ -47,19 +47,28 @@ app.get('/logged',(req,res)=>{
         res.send(m)
     })()
 })
-io.on('connection', (socket) => {
+
+
+//current website name from front-end
+
+
+const room=io.of('/current_website')
+
+room.on('connection', (socket) => {
     console.log("Connection Established ", socket.id )
 
 
 
     socket.on("send_ID",(data)=>{
         let userName=data.username
+        let website =data.website
+
         socket.on("send_M",(data)=>{
 
-            addMsg(userName,data.message)
+            addMsg(userName,data.message,website)
             // console.log("data received ",data.message)
 
-            io.emit("receive_M", {
+            room.emit("receive_M", {
                 message: data.message,
                 username:userName
             })
@@ -68,6 +77,8 @@ io.on('connection', (socket) => {
     })
 
 })
+
+
 
 app.use('/', express.static(__dirname + '/front-end'))
 
