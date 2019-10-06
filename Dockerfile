@@ -10,20 +10,22 @@ RUN pip install scikit-learn tensorflow_hub
 
 RUN apt-get install curl
 
-RUN curl -L https://deb.nodesource.com/setup_10.x 
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 RUN apt-get install -y nodejs
 
-RUN curl -S https://dl.yarnpkg.com/debian/pubkey.gpg |  apt-key add - \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" |  tee /etc/apt/sources.list.d/yarn.list \
-  apt-get update &&  apt-get install -y yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list 
+
+RUN apt-get update && apt-get install -y yarn
 
 WORKDIR /usr/src/app
 
 COPY . .
 
-RUN rm extension -rf \
-  yarn
+RUN rm extension -rf
+
+RUN yarn
 
 EXPOSE 4848
