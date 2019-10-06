@@ -24,7 +24,22 @@ const addMsg = async function(username, message, website) {
     message: message,
     website: website,
     date: new Date(),
+    flag: false,
   })
+}
+
+const updateMsg = async function(message) {
+  db = await connectdb('darkrai')
+  const messages = db.collection('messages')
+  const result = await messages.updateOne(
+    {
+      message: message,
+      flag: false,
+    },
+    { $set: { flag: true } }
+  )
+  console.log(result)
+  console.log(messages)
 }
 
 async function readMsgs(room) {
@@ -32,7 +47,7 @@ async function readMsgs(room) {
   const messages = db.collection('messages')
   const allMsg = []
   const msgArr = await messages
-    .find({ website: room })
+    .find({ website: room, flag: false })
     .sort({ date: -1 })
     .limit(20)
     .toArray()
@@ -96,11 +111,18 @@ io.sockets.on('connection', socket => {
       args: [data.message],
       scriptPath: './python/',
     }
+    console.log(data)
     PythonShell.run('prediction_model.py', options, function(err, result) {
       if (err) {
         console.log(err)
       } else {
-        console.log(result)
+        const temp = result[0].split(' ')
+        if (Number(temp[0]) > 0.55 || Number(temp[1]) > 0.55) {
+          io.sockets.in(socket.room).emit('delete_message', {
+            message: data.message,
+          })
+          updateMsg(data.message)
+        }
       }
     })
     addMsg(socket.username, data.message, socket.room)
@@ -116,3 +138,6 @@ app.use('/', express.static(__dirname + '/front-end'))
 server.listen(4848, () => {
   console.log('Server started on http://localhost:4848')
 })
+
+///hitgo17@gmail.com
+///porcu7-gutMev-dowvah

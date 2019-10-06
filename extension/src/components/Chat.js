@@ -10,10 +10,18 @@ export default ({ socket }) => {
   const { messageData, setMessageData } = useContext(Context)
   const messages = messageData || []
 
-  // Socket effect
+  // Recieve effect
   useEffect(() => {
     socket.on('receive_M', data => {
       setMessageData([...messages, data])
+    })
+  }, [messageData, messages, setMessageData, socket])
+
+  // Delete effect
+  useEffect(() => {
+    socket.on('delete_message', data => {
+      const temp = messages.filter(item => item.message !== data.message)
+      setMessageData(temp)
     })
   }, [messageData, messages, setMessageData, socket])
 
@@ -53,14 +61,15 @@ export default ({ socket }) => {
             socket.emit('send_M', {
               message: values.message,
             })
-            resetForm()
+            actions.resetForm()
           }}
-          render={({ handleChange, handleSubmit }) => (
+          render={({ handleChange, handleSubmit, values }) => (
             <Form onSubmit={handleSubmit}>
               <FormInput
                 type="text"
                 name="message"
                 onChange={handleChange}
+                value={values.message}
                 style={{ marginRight: 10 }}
               />
               <Button theme="light" type="submit">
