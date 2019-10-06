@@ -135,7 +135,9 @@ io.sockets.on('connection', socket => {
 
 app.use('/', express.static(__dirname + '/front-end'))
 
-server.listen(4848, () => {
+const port = process.env.PORT || 4848
+
+server.listen(port, () => {
   console.log('Server started on http://localhost:4848')
 })
 
