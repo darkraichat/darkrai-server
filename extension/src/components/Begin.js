@@ -26,7 +26,7 @@ const Begin = ({ socket }) => {
             })
             axios
               .get(
-                'http://localhost:4848/logged?' +
+                'https://whispering-temple-98133.herokuapp.com/logged?' +
                   queryString.stringify({ website: url })
               )
               .then(res => setMessageData(res.data))

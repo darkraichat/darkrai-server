@@ -15,7 +15,7 @@ export default class Main extends React.Component {
     this.state = {
       chat: false,
     }
-    this.socket = openSocket('http://localhost:4848')
+    this.socket = openSocket('https://whispering-temple-98133.herokuapp.com')
   }
 
   componentDidMount() {
