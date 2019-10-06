@@ -2,6 +2,7 @@ const express = require('express')
 const socket = require('socket.io')
 const http = require('http')
 const { connectdb } = require('./db')
+const { PythonShell } = require('python-shell')
 
 // Declaring the express app
 const app = express()
@@ -91,6 +92,17 @@ io.sockets.on('connection', socket => {
   })
 
   socket.on('send_M', data => {
+    let options = {
+      args: [data.message],
+      scriptPath: './python/',
+    }
+    PythonShell.run('prediction_model.py', options, function(err, result) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(result)
+      }
+    })
     addMsg(socket.username, data.message, socket.room)
     io.sockets.in(socket.room).emit('receive_M', {
       username: socket.username,

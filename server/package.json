@@ -12,6 +12,7 @@
     "express": "^4.17.1",
     "http": "0.0.0",
     "mongodb": "^3.3.2",
+    "python-shell": "^1.0.8",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {

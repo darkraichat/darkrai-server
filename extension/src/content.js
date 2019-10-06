@@ -9,20 +9,6 @@ import Context from './context/index'
 import './content.css'
 import 'shards-ui/dist/css/shards.min.css'
 
-const cssUrl =
-  process.env.NODE_ENV === 'development'
-    ? ''
-    : chrome.runtime.getURL('/static/css/content.css')
-
-let url
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.message === 'clicked_browser_action') {
-    toggle()
-    url = request.url
-    sessionStorage.setItem('URL', url)
-  }
-})
-
 export default class Main extends React.Component {
   constructor(props) {
     super(props)
@@ -54,7 +40,13 @@ export default class Main extends React.Component {
         }}
       >
         <Frame
-          head={[<link type="text/css" rel="stylesheet" href={cssUrl}></link>]}
+          head={[
+            <link
+              type="text/css"
+              rel="stylesheet"
+              href={chrome.runtime.getURL('/static/css/content.css')}
+            ></link>,
+          ]}
         >
           <FrameContextConsumer>
             {// Callback is invoked with iframe's window and document instances
@@ -71,9 +63,11 @@ export default class Main extends React.Component {
 }
 
 const app = document.createElement('div')
+
 app.id = 'my-extension-root'
 
 document.body.appendChild(app)
+
 ReactDOM.render(<Main />, app)
 
 app.style.display = 'none'
@@ -85,3 +79,9 @@ function toggle() {
     app.style.display = 'none'
   }
 }
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.message === 'clicked_browser_action') {
+    toggle()
+  }
+})

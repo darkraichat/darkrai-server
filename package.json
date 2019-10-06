@@ -6,7 +6,8 @@
   "scripts": {
     "ext:start": "cd extension && yarn start",
     "ext:build": "cd extension && yarn build",
-    "server:start": "cd server && yarn dev"
+    "server:dev": "cd server && yarn dev",
+    "server:start": "cd server && yarn start"
   },
   "private": true,
   "license": "UNLICENSED",

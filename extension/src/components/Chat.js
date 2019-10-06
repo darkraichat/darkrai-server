@@ -49,10 +49,11 @@ export default ({ socket }) => {
           initialValues={{
             message: '',
           }}
-          onSubmit={values => {
+          onSubmit={(values, actions) => {
             socket.emit('send_M', {
               message: values.message,
             })
+            resetForm()
           }}
           render={({ handleChange, handleSubmit }) => (
             <Form onSubmit={handleSubmit}>
