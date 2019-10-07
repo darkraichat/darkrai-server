@@ -1,15 +1,25 @@
 const express = require('express')
 const socket = require('socket.io')
 const http = require('http')
+const morgan = require('morgan')
+const helmet = require('helmet')
+const _ = require('lodash')
 const { connectdb } = require('./db')
 const { PythonShell } = require('python-shell')
 
 // Declaring the express app
 const app = express()
 
-// socket.io integration with express
+// Morgan for logging requests
+app.use(morgan('tiny'))
+
+// A little security using helmet
+app.use(helmet())
+
+// Socket.io integration with express
 const server = http.createServer(app)
 
+// Creating the socket
 const io = socket(server)
 
 // JSON parser
@@ -77,7 +87,6 @@ async function getRooms() {
 let rooms
 ;(async function() {
   rooms = await getRooms()
-  console.log(rooms)
 })()
 
 const addRoom = async function(website) {
@@ -98,7 +107,6 @@ io.sockets.on('connection', socket => {
 
     if (rooms.includes(socket.room)) {
       socket.join(socket.room)
-      console.log(rooms)
     } else {
       rooms.push(socket.room)
       addRoom(socket.room)
@@ -125,6 +133,21 @@ io.sockets.on('connection', socket => {
         }
       }
     })
+
+    _.debounce(function() {
+      PythonShell.run('chatbot.py', options, function(err, result) {
+        if (err) {
+          console.log(err)
+        } else {
+          addMsg('frenzybot', result[0], socket.room)
+          io.sockets.in(socket.room).emit('receive_M', {
+            username: 'frenzybot',
+            message: result[0],
+          })
+        }
+      })
+    }, 60000)
+
     addMsg(socket.username, data.message, socket.room)
     io.sockets.in(socket.room).emit('receive_M', {
       username: socket.username,
@@ -133,13 +156,11 @@ io.sockets.on('connection', socket => {
   })
 })
 
-app.use('/', express.static(__dirname + '/front-end'))
+// Serving public folder
+app.use('/', express.static(__dirname + '/public'))
 
 const port = process.env.PORT || 4848
 
 server.listen(port, () => {
-  console.log('Server started on http://localhost:4848')
+  console.log(`Server running on port ${port}...`)
 })
-
-///hitgo17@gmail.com
-///porcu7-gutMev-dowvah

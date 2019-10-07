@@ -9,9 +9,13 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
     "express": "^4.17.1",
+    "helmet": "^3.21.1",
     "http": "0.0.0",
+    "lodash": "^4.17.15",
     "mongodb": "^3.3.2",
+    "morgan": "^1.9.1",
     "python-shell": "^1.0.8",
     "socket.io": "^2.3.0"
   },

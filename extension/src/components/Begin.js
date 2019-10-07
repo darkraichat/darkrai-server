@@ -4,6 +4,7 @@ import { Formik } from 'formik'
 import axios from 'axios'
 import queryString from 'query-string'
 import Context from '../context'
+import { serverUrl } from '../constants'
 import './Begin.css'
 
 const Begin = ({ socket }) => {
@@ -26,8 +27,7 @@ const Begin = ({ socket }) => {
             })
             axios
               .get(
-                'https://whispering-temple-98133.herokuapp.com/logged?' +
-                  queryString.stringify({ website: url })
+                `${serverUrl}/logged?` + queryString.stringify({ website: url })
               )
               .then(res => setMessageData(res.data))
           }}

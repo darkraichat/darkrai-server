@@ -6,8 +6,8 @@ import openSocket from 'socket.io-client'
 import Begin from './components/Begin'
 import Chat from './components/Chat'
 import Context from './context/index'
+import { serverUrl } from './constants'
 import './content.css'
-import 'shards-ui/dist/css/shards.min.css'
 
 export default class Main extends React.Component {
   constructor(props) {
@@ -15,7 +15,7 @@ export default class Main extends React.Component {
     this.state = {
       chat: false,
     }
-    this.socket = openSocket('https://whispering-temple-98133.herokuapp.com')
+    this.socket = openSocket(serverUrl)
   }
 
   componentDidMount() {

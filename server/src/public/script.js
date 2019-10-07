@@ -33,7 +33,6 @@ $(() => {
         msgList.prepend(
           `<li class="list-group-item"> ${data.username}: ${data.message}  </li>`
         )
-        // msgList.append(`<li class="list-group-item"> (${dateTime})${data.username}: ${data.message}  </li>`)
       })
     })
 

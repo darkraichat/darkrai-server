@@ -1,4 +1,4 @@
-from tensorflow/tensorflow:latest-py3
+FROM tensorflow/tensorflow:latest-py3
 
 RUN apt-get install python3-pip
 
@@ -29,3 +29,6 @@ RUN rm extension -rf
 RUN yarn
 
 EXPOSE 4848
+
+CMD ["cd server && node src/index.js"]
+
