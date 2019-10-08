@@ -74,10 +74,7 @@ COPY . .
 
 RUN yarn
 
-# Switch back to dialog for any ad-hoc use of apt-get
-ENV DEBIAN_FRONTEND=
-
 EXPOSE 4848
 
-CMD ["cd server && node src/index.js"]
-
+# Switch back to dialog for any ad-hoc use of apt-get
+ENV DEBIAN_FRONTEND=
