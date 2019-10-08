@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile
 run:
-  web: bash -c "cd server && node src/index.js"
+  web: bash -c "node src/index.js"

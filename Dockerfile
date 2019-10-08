@@ -20,15 +20,12 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 
 RUN apt-get update && apt-get install -y yarn
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/server
 
 COPY . .
-
-RUN rm extension -rf
 
 RUN yarn
 
 EXPOSE 4848
 
-CMD ["cd server && node src/index.js"]
-
+CMD ["node src/index.js"]
