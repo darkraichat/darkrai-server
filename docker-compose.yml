@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  server:
-    build: ./
-    command: bash -c "cd server && node src/index.js"
-    ports:
-      - 4848:4848
