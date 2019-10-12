@@ -3,12 +3,26 @@ const socket = require('socket.io')
 const http = require('http')
 const morgan = require('morgan')
 const helmet = require('helmet')
+const mongoose = require('mongoose')
 const _ = require('lodash')
-const { connectdb } = require('./db')
 const { PythonShell } = require('python-shell')
+const Message = require('./models/message')
+const Room = require('./models/room')
+var rooms = []
+require('dotenv').config()
 
 // Declaring the express app
 const app = express()
+
+// Connecting to Database
+mongoose
+  .connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .catch(error => console.log(error))
+
+mongoose.set('useCreateIndex', true)
 
 // Morgan for logging requests
 app.use(morgan('tiny'))
@@ -26,89 +40,76 @@ const io = socket(server)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const addMsg = async function(username, message, website) {
-  db = await connectdb('darkrai')
-  const messages = db.collection('messages')
-  await messages.insertOne({
-    username: username,
-    message: message,
-    website: website,
+const addMsg = function(username, message, website) {
+  var newMessage = {
+    username,
+    message,
+    website,
     date: new Date(),
-    flag: false,
+  }
+
+  Message.create(newMessage, (err, message) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Message added')
+    }
   })
 }
 
-const updateMsg = async function(message) {
-  db = await connectdb('darkrai')
-  const messages = db.collection('messages')
-  const result = await messages.updateOne(
-    {
-      message: message,
-      flag: false,
-    },
-    { $set: { flag: true } }
+const updateMsg = function(message) {
+  var message = {
+    message,
+    hateSpeechFlag: false,
+  }
+  Message.findOneAndUpdate(
+    message,
+    { $set: { hateSpeechFlag: true } },
+    (err, updatedMessage) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log(updatedMessage)
+      }
+    }
   )
-  console.log(result)
-  console.log(messages)
-}
-
-async function readMsgs(room) {
-  db = await connectdb('darkrai')
-  const messages = db.collection('messages')
-  const allMsg = []
-  const msgArr = await messages
-    .find({ website: room, flag: false })
-    .sort({ date: -1 })
-    .limit(20)
-    .toArray()
-  msgArr.forEach(m => allMsg.push(m))
-
-  return allMsg
 }
 
 app.get('/logged', (req, res) => {
-  ;(async function() {
-    const m = await readMsgs(req.query.website)
-    res.send(m.reverse())
-  })()
+  room = {
+    website: req.query.website,
+    hateSpeechFlag: false,
+  }
+  Message.find(room, (err, messages) => {
+    res.send(messages.reverse())
+  })
 })
 
-async function getRooms() {
-  db = await connectdb('darkrai')
-  const room = await db
-    .collection('rooms')
-    .find({})
-    .toArray()
-  const allRooms = []
-  room.forEach(r => allRooms.push(r.website))
-
-  return allRooms
-}
-let rooms
-;(async function() {
-  rooms = await getRooms()
-})()
-
-const addRoom = async function(website) {
-  db = await connectdb('darkrai')
-  const rooms = db.collection('rooms')
-  await rooms.insertOne({
-    website: website,
+const addRoom = function(website) {
+  var room = {
+    website,
     date: new Date(),
+  }
+  Room.create(room, (err, newRoom) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Added new room')
+    }
   })
 }
 
-io.sockets.on('connection', socket => {
+io.sockets.on('connection', function(socket) {
   console.log('Connection Established ', socket.id)
-
-  socket.on('add_user', data => {
+  socket.on('add_user', async function(data) {
     socket.username = data.username
     socket.room = data.website
 
-    if (rooms.includes(socket.room)) {
+    roomExist = await Room.exists({ website: socket.room })
+
+    if (roomExist) {
       socket.join(socket.room)
     } else {
-      rooms.push(socket.room)
       addRoom(socket.room)
       socket.join(socket.room)
     }
