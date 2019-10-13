@@ -4,25 +4,30 @@ const http = require('http')
 const morgan = require('morgan')
 const helmet = require('helmet')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const _ = require('lodash')
 const { PythonShell } = require('python-shell')
 const Room = require('./models/room')
 const indexRoutes = require('./routes/index')
 const controllers = require('./controllers/index')
+
+// DotENV config
 require('dotenv').config()
 
 // Declaring the express app
 const app = express()
 
 // Connecting to Database
+const dbUrl = process.env.DB_URL || ''
+const dbName = process.env.DB_NAME || ''
 mongoose
-  .connect(process.env.DB_URL, {
+  .connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: process.env.DATABASE,
+    dbName,
   })
-  .catch(error => console.log(error))
-
+  .then(() => console.log('Connected to MongoDB...'))
+  .catch(error => console.log('MongoDB Error:\n', error))
 mongoose.set('useCreateIndex', true)
 
 // Morgan for logging requests
@@ -30,6 +35,9 @@ app.use(morgan('tiny'))
 
 // A little security using helmet
 app.use(helmet())
+
+// CORS
+app.use(cors())
 
 // Socket.io integration with express
 const server = http.createServer(app)
