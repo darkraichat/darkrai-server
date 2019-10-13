@@ -49,6 +49,9 @@ const io = socket(server)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Users count for each room
+var rooms = {}
+
 io.sockets.on('connection', function(socket) {
   console.log('Connection Established ', socket.id)
   socket.on('add_user', async function(data) {
@@ -63,6 +66,13 @@ io.sockets.on('connection', function(socket) {
       controllers.addRoom(socket.room)
       socket.join(socket.room)
     }
+
+    if (!rooms[data.website]) {
+      rooms[data.website] = 1
+    } else {
+      rooms[data.website]++
+    }
+    console.log('Number of users in', socket.room, ':', rooms[socket.room])
   })
 
   socket.on('send_M', data => {
@@ -103,6 +113,12 @@ io.sockets.on('connection', function(socket) {
       username: socket.username,
       message: data.message,
     })
+  })
+
+  socket.on('Disconnect', data => {
+    console.log('User Disconnected')
+    rooms[data.website]--
+    console.log('Number of users in', socket.room, ':', rooms[socket.room])
   })
 })
 

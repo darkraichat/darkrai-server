@@ -14,9 +14,11 @@ $(() => {
   let sendMessage = $('#sendMessage')
   let login = $('#login')
   let msgList = $('#msgList')
+  let disconnect = $('#disconnect')
 
   sendMessage.hide()
   inputMessage.hide()
+  disconnect.hide()
 
   login.click(() => {
     socket.emit('add_user', {
@@ -40,11 +42,18 @@ $(() => {
     inputMessage.show()
     login.hide()
     sendMessage.show()
+    disconnect.show()
   })
   sendMessage.click(() => {
     socket.emit('send_M', {
       message: inputMessage.val(),
     })
+  })
+  disconnect.click(() => {
+    socket.emit('Disconnect', {
+      website: current_website,
+    })
+    window.location = 'http://localhost:4848/test.html'
   })
 
   socket.on('receive_M', data => {
