@@ -8,6 +8,7 @@ const _ = require('lodash')
 const { PythonShell } = require('python-shell')
 const Message = require('./models/message')
 const Room = require('./models/room')
+const indexRoutes = require('./routes/index')
 require('dotenv').config()
 
 // Declaring the express app
@@ -74,16 +75,6 @@ const updateMsg = function(message) {
     }
   )
 }
-
-app.get('/logged', (req, res) => {
-  room = {
-    website: req.query.website,
-    hateSpeechFlag: false,
-  }
-  Message.find(room, (err, messages) => {
-    res.send(messages.reverse())
-  })
-})
 
 const addRoom = function(website) {
   var room = {
@@ -158,6 +149,9 @@ io.sockets.on('connection', function(socket) {
 
 // Serving public folder
 app.use('/', express.static(__dirname + '/public'))
+
+// Specifyinf routes
+app.use('/', indexRoutes)
 
 const port = process.env.PORT || 4848
 
