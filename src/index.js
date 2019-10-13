@@ -8,7 +8,6 @@ const _ = require('lodash')
 const { PythonShell } = require('python-shell')
 const Message = require('./models/message')
 const Room = require('./models/room')
-var rooms = []
 require('dotenv').config()
 
 // Declaring the express app
@@ -19,6 +18,7 @@ mongoose
   .connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    dbName: process.env.DATABASE,
   })
   .catch(error => console.log(error))
 
@@ -120,7 +120,6 @@ io.sockets.on('connection', function(socket) {
       args: [data.message],
       scriptPath: './python/',
     }
-    console.log(data)
     PythonShell.run('prediction_model.py', options, function(err, result) {
       if (err) {
         console.log(err)
@@ -163,5 +162,9 @@ app.use('/', express.static(__dirname + '/public'))
 const port = process.env.PORT || 4848
 
 server.listen(port, () => {
-  console.log(`Server running on port ${port}...`)
+  console.log(
+    `Server is running in`,
+    process.env.NODE_ENV,
+    `mode on port ${port}...`
+  )
 })
