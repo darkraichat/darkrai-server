@@ -13,6 +13,7 @@ class Model():
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         return model
     def train(self, train_X, train_y, epochs = 25):
-        self.model.fit(train_X, train_y, epochs = 25)
-
+        self.model.fit(train_X, train_y, epochs = epochs)
+    def save(self, model_name):
+        self.model.save(model_name)
 
