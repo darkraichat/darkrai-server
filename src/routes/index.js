@@ -8,7 +8,15 @@ router.get('/logged', (req, res) => {
     hateSpeechFlag: false,
   }
   Message.find(room, (err, messages) => {
-    res.send(messages.reverse())
+    if (err) {
+      console.log(err)
+    }
+    if (messages.length <= 50) {
+      res.send(messages.reverse())
+    } else {
+      limMessages = messages.slice(messages.length - 50)
+      res.send(limMessages.reverse())
+    }
   })
 })
 

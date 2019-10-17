@@ -14,13 +14,10 @@ if __name__== '__main__':
         preprocessed_text.append(preprocess(str(labeled_data['tweet'][i])))
 
     sequence_data = convert_text_to_sequences(preprocessed_text)
-    train_X, test_X, train_y, test_y = train_test_split(sequence_data, y, train_size = 0.95, shuffle = True)
+    train_X, test_X, train_y, test_y = train_test_split(sequence_data, y)
     
     model = Model()
     model.train(train_X, np.array(train_y))
-
-    print("Evaluation of Model :\n", model.evaluate(test_X, test_y))
-    print()
 
     model.save('model.h5')
 

@@ -1,4 +1,5 @@
 import re
+import pickle
 import nltk
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
@@ -9,11 +10,14 @@ def preprocess(tweets):
 	tweet = ' '.join(re.sub("(@[_A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",t).split())
 	return tweet.lower()
 
-def convert_text_to_sequences(text, vocab_size = 100000, maxlen = 150):
-    tokenizer = Tokenizer(num_words= vocab_size)
-    tokenizer.fit_on_texts(text)
+def convert_text_to_sequences(text, vocab_size = 100000, maxlen = 50, tokenizer = None):
+    if tokenizer is None:
+        tokenizer = Tokenizer(num_words= vocab_size)
+        tokenizer.fit_on_texts(text)
+        with open('tokenizer.pickle', 'wb') as f:
+            pickle.dump(tokenizer, f)
     sequences = tokenizer.texts_to_sequences(text)
-    data = pad_sequences(sequences, maxlen = 150, dtype = 'int', padding = 'post')
+    data = pad_sequences(sequences, maxlen = maxlen, dtype = 'int', padding = 'post')
     return data
     
 def preprocess_labels(labeled_data):
