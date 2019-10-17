@@ -5,7 +5,7 @@ const morgan = require('morgan')
 const helmet = require('helmet')
 const mongoose = require('mongoose')
 const cors = require('cors')
-const _ = require('lodash')
+const path = require('path')
 const { PythonShell } = require('python-shell')
 const Room = require('./models/room')
 const indexRoutes = require('./routes/index')
@@ -50,7 +50,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Users count for each room
-var rooms = {}
+const rooms = {}
 
 io.sockets.on('connection', function(socket) {
   console.log('Connection Established ', socket.id)
@@ -58,7 +58,7 @@ io.sockets.on('connection', function(socket) {
     socket.username = data.username
     socket.room = data.website
 
-    roomExist = await Room.exists({ website: socket.room })
+    const roomExist = await Room.exists({ website: socket.room })
 
     if (roomExist) {
       socket.join(socket.room)
@@ -76,11 +76,11 @@ io.sockets.on('connection', function(socket) {
   })
 
   socket.on('send_M', data => {
-    let options = {
+    const options = {
       args: [data.message],
-      scriptPath: './python/',
+      scriptPath: './python',
     }
-    PythonShell.run('prediction_model.py', options, function(err, result) {
+    PythonShell.run('run_model.py', options, function(err, result) {
       if (err) {
         console.log(err)
       } else {
@@ -93,20 +93,6 @@ io.sockets.on('connection', function(socket) {
         }
       }
     })
-
-    _.debounce(function() {
-      PythonShell.run('chatbot.py', options, function(err, result) {
-        if (err) {
-          console.log(err)
-        } else {
-          controllers.addMsg('frenzybot', result[0], socket.room)
-          io.sockets.in(socket.room).emit('receive_M', {
-            username: 'frenzybot',
-            message: result[0],
-          })
-        }
-      })
-    }, 60000)
 
     controllers.addMsg(socket.username, data.message, socket.room)
     io.sockets.in(socket.room).emit('receive_M', {
@@ -123,7 +109,7 @@ io.sockets.on('connection', function(socket) {
 })
 
 // Serving public folder
-app.use('/', express.static(__dirname + '/public'))
+app.use('/', express.static(path.join(__dirname, '/public')))
 
 // Specifying routes
 app.use('/', indexRoutes)
@@ -132,8 +118,6 @@ const port = process.env.PORT || 4848
 
 server.listen(port, () => {
   console.log(
-    `Server is running in`,
-    process.env.NODE_ENV,
-    `mode on port ${port}...`
+    `Server is running in ${process.env.NODE_ENV} mode on port ${port}...`
   )
 })

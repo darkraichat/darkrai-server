@@ -2,7 +2,7 @@ const Message = require('../models/message')
 const Room = require('../models/room')
 
 const addMsg = function(username, message, website) {
-  var newMessage = {
+  const newMessage = {
     username,
     message,
     website,
@@ -19,12 +19,12 @@ const addMsg = function(username, message, website) {
 }
 
 const updateMsg = function(message) {
-  var message = {
+  const updatedMessage = {
     message,
     hateSpeechFlag: false,
   }
   Message.findOneAndUpdate(
-    message,
+    updatedMessage,
     { $set: { hateSpeechFlag: true } },
     (err, updatedMessage) => {
       if (err) {
@@ -37,7 +37,7 @@ const updateMsg = function(message) {
 }
 
 const addRoom = function(website) {
-  var room = {
+  const room = {
     website,
     date: new Date(),
   }

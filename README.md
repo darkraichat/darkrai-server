@@ -6,4 +6,6 @@ The server component for the Darkrai browser extension.
 
 ## Development
 
-Darkrai uses a docker container configuration for both development (using vscode) and production. Hence we recommend you install docker. To learn more visit here # TODO
+Darkrai uses a docker container configuration for both development (using vscode) and production. Hence we recommend you install docker. To learn more visit [here](https://www.docker.com/get-started).
+
+WIP

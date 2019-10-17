@@ -1,20 +1,22 @@
-console.log('frontend running')
+/*
+Testing frontend
+*/
 
-let socket = io()
+const socket = io()
 
 socket.on('connection', () => {
   console.log(socket.id)
 })
 
-const current_website = 'jbejv'
+const current_website = 'darkrai-test.com'
 
 $(() => {
-  let inputMessage = $('#chatMessage')
-  let username = $('#username')
-  let sendMessage = $('#sendMessage')
-  let login = $('#login')
-  let msgList = $('#msgList')
-  let disconnect = $('#disconnect')
+  const inputMessage = $('#chatMessage')
+  const username = $('#username')
+  const sendMessage = $('#sendMessage')
+  const login = $('#login')
+  const msgList = $('#msgList')
+  const disconnect = $('#disconnect')
 
   sendMessage.hide()
   inputMessage.hide()
