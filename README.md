@@ -49,7 +49,3 @@ For docker users:
   ```bash
   docker run -p 4848 darkrai
   ```
-
-## Other Commands Available
-
-- Run the server with node - `yarn start`
