@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-var roomSchema = new mongoose.Schema({
+const roomSchema = new mongoose.Schema({
   website: {
     type: String,
     required: true,

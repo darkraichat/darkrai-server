@@ -1,14 +1,11 @@
-/*
-Testing frontend
-*/
-
+/* eslint-disable no-undef */
 const socket = io()
 
 socket.on('connection', () => {
   console.log(socket.id)
 })
 
-const current_website = 'darkrai-test.com'
+const currentWebsite = 'darkrai-test.com'
 
 $(() => {
   const inputMessage = $('#chatMessage')
@@ -25,15 +22,11 @@ $(() => {
   login.click(() => {
     socket.emit('add_user', {
       username: username.val(),
-      website: current_website,
+      website: currentWebsite,
     })
 
-    $.get('/logged', { website: current_website }, messages => {
+    $.get('/logged', { website: currentWebsite }, messages => {
       messages.forEach(data => {
-        var str = data.date
-        var date = new Date(str)
-        dateTime = `${date.getDate()}-${date.getMonth() +
-          1}-${date.getFullYear()}  `
         msgList.prepend(
           `<li class="list-group-item"> ${data.username}: ${data.message}  </li>`
         )
@@ -53,7 +46,7 @@ $(() => {
   })
   disconnect.click(() => {
     socket.emit('Disconnect', {
-      website: current_website,
+      website: currentWebsite,
     })
     window.location = 'http://localhost:4848/test.html'
   })

@@ -3,7 +3,7 @@ const router = express.Router()
 const Message = require('../models/message')
 
 router.get('/logged', (req, res) => {
-  room = {
+  const room = {
     website: req.query.website,
     hateSpeechFlag: false,
   }
@@ -14,7 +14,7 @@ router.get('/logged', (req, res) => {
     if (messages.length <= 50) {
       res.send(messages.reverse())
     } else {
-      limMessages = messages.slice(messages.length - 50)
+      const limMessages = messages.slice(messages.length - 50)
       res.send(limMessages.reverse())
     }
   })
