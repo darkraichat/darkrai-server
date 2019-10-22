@@ -8,6 +8,16 @@ The server component for the Darkrai browser extension.
 
 Darkrai uses a docker container configuration for both development (using vscode) and production. Hence we recommend you install docker. Learn more [here](https://www.docker.com/get-started).
 
+### Environment file
+
+You need to setup a `.env` file in the root of the repository. The file should look like this:
+
+```bash
+DB_URL = #Your database url here
+DB_NAME = #Your database name here
+NODE_ENV = #Your node environment mode (development or production)
+```
+
 ### Docker
 
 - To develop in docker with vscode you need to have the [Remote-Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension installed.
