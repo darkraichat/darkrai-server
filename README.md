@@ -2,6 +2,8 @@
 
 The server component for the Darkrai browser extension.
 
+You can find the repository for the extension [here.](https://github.com/statebait/darkrai-extension)
+
 > Darkrai is a browser extension which enables you to chat with anybody visiting the same website 🤩
 
 ## Development
