@@ -6,10 +6,13 @@ const helmet = require('helmet')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const path = require('path')
-const { PythonShell } = require('python-shell')
 const Room = require('./models/room')
 const indexRoutes = require('./routes/index')
 const controllers = require('./controllers/index')
+const toxicity = require('@tensorflow-models/toxicity')
+
+// tfjs node backend intialization
+require('@tensorflow/tfjs-node')
 
 // DotENV config
 require('dotenv').config()
@@ -76,22 +79,17 @@ io.sockets.on('connection', function(socket) {
   })
 
   socket.on('send_M', data => {
-    const options = {
-      args: [data.message],
-      scriptPath: './python',
-    }
-    PythonShell.run('run_model.py', options, function(err, result) {
-      if (err) {
-        console.log(err)
-      } else {
-        const temp = result[0].split(' ')
-        if (Number(temp[0]) > 0.55 || Number(temp[1]) > 0.55) {
+    // tfjs toxicity model prediction
+    toxicity.load().then(model => {
+      model.classify(data.message).then(predictions => {
+        if (predictions[predictions.length - 1].results[0].match) {
+          console.log('Toxic message detected. Deleting now...')
           io.sockets.in(socket.room).emit('delete_message', {
             message: data.message,
           })
           controllers.updateMsg(data.message)
         }
-      }
+      })
     })
 
     controllers.addMsg(socket.username, data.message, socket.room)
