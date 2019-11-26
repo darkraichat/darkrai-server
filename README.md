@@ -30,17 +30,15 @@ NODE_ENV = #Your node environment mode (development or production)
 
 You need the following dependencies installed on your machine:
 
-- Python 3.7
-- Keras (with Tensorflow backend)
-- NLTK
-- Numpy
 - NodeJS
 - Yarn
 
 Run the following commands in the cloned repository:
 
 ```bash
+# To install node dependencies
 yarn
+# To run the dev server
 yarn dev
 ```
 
