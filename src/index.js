@@ -78,7 +78,7 @@ io.sockets.on('connection', function(socket) {
     console.log('Number of users in', socket.room, ':', rooms[socket.room])
   })
 
-  socket.on('send_M', data => {
+  socket.on('send_message', data => {
     // tfjs toxicity model prediction
     toxicity.load().then(model => {
       model.classify(data.message).then(predictions => {
@@ -87,13 +87,13 @@ io.sockets.on('connection', function(socket) {
           io.sockets.in(socket.room).emit('delete_message', {
             message: data.message,
           })
-          controllers.updateMsg(data.message)
+          controllers.updateMessage(data.message)
         }
       })
     })
 
-    controllers.addMsg(socket.username, data.message, socket.room)
-    io.sockets.in(socket.room).emit('receive_M', {
+    controllers.addMessage(socket.username, data.message, socket.room)
+    io.sockets.in(socket.room).emit('receive_message', {
       username: socket.username,
       message: data.message,
     })

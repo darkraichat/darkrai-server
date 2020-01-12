@@ -1,7 +1,7 @@
 const Message = require('../models/message')
 const Room = require('../models/room')
 
-const addMsg = function(username, message, website) {
+const addMessage = function(username, message, website) {
   const newMessage = {
     username,
     message,
@@ -18,7 +18,7 @@ const addMsg = function(username, message, website) {
   })
 }
 
-const updateMsg = function(message) {
+const updateMessage = function(message) {
   const updatedMessage = {
     message,
     hateSpeechFlag: false,
@@ -51,7 +51,7 @@ const addRoom = function(website) {
 }
 
 module.exports = {
-  addMsg,
+  addMessage,
   addRoom,
-  updateMsg,
+  updateMessage,
 }
