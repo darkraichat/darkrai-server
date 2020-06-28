@@ -1,4 +1,4 @@
-exports.makeGhostPassword = length => {
+exports.makePassword = length => {
   let result = ''
   const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'

@@ -50,8 +50,18 @@ const addRoom = function(website) {
   })
 }
 
+const getLatestMessages = async ({ website }) => {
+  const room = {
+    website,
+    hateSpeechFlag: false,
+  }
+  const messages = await Message.find(room)
+  return messages.splice(0, 50)
+}
+
 module.exports = {
   addMessage,
   addRoom,
   updateMessage,
+  getLatestMessages,
 }

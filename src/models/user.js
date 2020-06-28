@@ -8,13 +8,14 @@ const userSchema = new mongoose.Schema({
     maxlength: 20,
     unique: true,
   },
-  ghostPassword: {
+  password: {
     type: String,
     required: true,
   },
   lastActive: {
     type: Date,
     required: true,
+    default: Date.now,
   },
 })
 
