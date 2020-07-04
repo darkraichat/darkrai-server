@@ -5,16 +5,16 @@ const morgan = require('morgan')
 const helmet = require('helmet')
 const mongoose = require('mongoose')
 const cors = require('cors')
-const path = require('path')
+const jwt = require('jsonwebtoken')
 const Room = require('./models/room')
-const indexRoutes = require('./routes/index')
-const controllers = require('./controllers/index')
+const indexRoutes = require('./routes')
+const controllers = require('./controllers')
 const toxicity = require('@tensorflow-models/toxicity')
 
-// tfjs node backend intialization
+// tfjs node backend initialization
 require('@tensorflow/tfjs-node')
 
-// DotENV config
+// Loading .env
 require('dotenv').config()
 
 // Declaring the express app
@@ -34,7 +34,7 @@ mongoose
 mongoose.set('useCreateIndex', true)
 
 // Morgan for logging requests
-app.use(morgan('tiny'))
+app.use(morgan('combined'))
 
 // A little security using helmet
 app.use(helmet())
@@ -55,59 +55,72 @@ app.use(express.urlencoded({ extended: true }))
 // Users count for each room
 const rooms = {}
 
-io.sockets.on('connection', function(socket) {
-  console.log('Connection Established ', socket.id)
-  socket.on('add_user', async function(data) {
-    socket.username = data.username
-    socket.room = data.website
-
-    const roomExist = await Room.exists({ website: socket.room })
-
-    if (roomExist) {
-      socket.join(socket.room)
-    } else {
-      controllers.addRoom(socket.room)
-      socket.join(socket.room)
-    }
-
-    if (!rooms[data.website]) {
-      rooms[data.website] = 1
-    } else {
-      rooms[data.website]++
-    }
-    console.log('Number of users in', socket.room, ':', rooms[socket.room])
-  })
-
-  socket.on('send_message', data => {
-    // tfjs toxicity model prediction
-    toxicity.load().then(model => {
-      model.classify(data.message).then(predictions => {
-        if (predictions[predictions.length - 1].results[0].match) {
-          console.log('Toxic message detected. Deleting now...')
-          io.sockets.in(socket.room).emit('delete_message', {
-            message: data.message,
-          })
-          controllers.updateMessage(data.message)
+io.sockets
+  .use(function(socket, next) {
+    if (socket.handshake.query && socket.handshake.query.token) {
+      jwt.verify(
+        socket.handshake.query.token,
+        process.env.SERVER_SECRET,
+        function(err, decoded) {
+          if (err) return next(new Error('Authentication error'))
+          socket.decoded = decoded
+          next()
         }
+      )
+    } else {
+      next(new Error('Authentication error'))
+    }
+  })
+  .on('connection', function(socket) {
+    console.log('Connection Established ', socket.id)
+    socket.on('add_user', async function(data) {
+      socket.username = data.username
+      socket.room = data.website
+
+      const roomExist = await Room.exists({ website: socket.room })
+
+      if (roomExist) {
+        socket.join(socket.room)
+      } else {
+        controllers.addRoom(socket.room)
+        socket.join(socket.room)
+      }
+
+      if (!rooms[data.website]) {
+        rooms[data.website] = 1
+      } else {
+        rooms[data.website]++
+      }
+      console.log('Number of users in', socket.room, ':', rooms[socket.room])
+    })
+
+    socket.on('send_message', data => {
+      // tfjs toxicity model prediction
+      toxicity.load().then(model => {
+        model.classify(data.message).then(predictions => {
+          if (predictions[predictions.length - 1].results[0].match) {
+            console.log('Toxic message detected. Deleting now...')
+            io.sockets.in(socket.room).emit('delete_message', {
+              message: data.message,
+            })
+            controllers.updateMessage(data.message)
+          }
+        })
+      })
+
+      controllers.addMessage(socket.username, data.message, socket.room)
+      io.sockets.in(socket.room).emit('receive_message', {
+        username: socket.username,
+        message: data.message,
       })
     })
 
-    controllers.addMessage(socket.username, data.message, socket.room)
-    io.sockets.in(socket.room).emit('receive_message', {
-      username: socket.username,
-      message: data.message,
+    socket.on('disconnect', data => {
+      console.log('User Disconnected')
+      rooms[data.website]--
+      console.log('Number of users in', socket.room, ':', rooms[socket.room])
     })
   })
-
-  socket.on('Disconnect', data => {
-    console.log('User Disconnected')
-    rooms[data.website]--
-    console.log('Number of users in', socket.room, ':', rooms[socket.room])
-  })
-})
-
-// Serving public folder
-app.use('/', express.static(path.join(__dirname, '/public')))
 
 // Specifying routes
 app.use('/', indexRoutes)
