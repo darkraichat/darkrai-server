@@ -15,9 +15,10 @@ Darkrai uses a docker container configuration for both development (using vscode
 You need to setup a `.env` file in the root of the repository. The file should look like this:
 
 ```bash
-DB_URL = #Your database url here
-DB_NAME = #Your database name here
-NODE_ENV = #Your node environment mode (development or production)
+DB_URL=#Your database url here
+DB_NAME=#Your database name here
+NODE_ENV=#Your node environment mode (development or production)
+SERVER_SECRET=#A random string
 ```
 
 ### Docker
