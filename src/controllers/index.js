@@ -1,7 +1,7 @@
 const Message = require('../models/message')
 const Room = require('../models/room')
 
-const addMessage = function(username, message, website) {
+const addMessage = function (username, message, website) {
   const newMessage = {
     username,
     message,
@@ -18,7 +18,7 @@ const addMessage = function(username, message, website) {
   })
 }
 
-const updateMessage = function(message) {
+const updateMessage = function (message) {
   const updatedMessage = {
     message,
     hateSpeechFlag: false,
@@ -36,7 +36,7 @@ const updateMessage = function(message) {
   )
 }
 
-const addRoom = function(website) {
+const addRoom = function (website) {
   const room = {
     website,
     date: new Date(),

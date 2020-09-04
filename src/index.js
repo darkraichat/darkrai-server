@@ -30,7 +30,7 @@ mongoose
     dbName,
   })
   .then(() => console.log('Connected to MongoDB...'))
-  .catch(error => console.log('MongoDB Error:\n', error))
+  .catch((error) => console.log('MongoDB Error:\n', error))
 mongoose.set('useCreateIndex', true)
 
 // Morgan for logging requests
@@ -56,12 +56,12 @@ app.use(express.urlencoded({ extended: true }))
 const rooms = {}
 
 io.sockets
-  .use(function(socket, next) {
+  .use(function (socket, next) {
     if (socket.handshake.query && socket.handshake.query.token) {
       jwt.verify(
         socket.handshake.query.token,
         process.env.SERVER_SECRET,
-        function(err, decoded) {
+        function (err, decoded) {
           if (err) return next(new Error('Authentication error'))
           socket.decoded = decoded
           next()
@@ -71,9 +71,9 @@ io.sockets
       next(new Error('Authentication error'))
     }
   })
-  .on('connection', function(socket) {
+  .on('connection', function (socket) {
     console.log('Connection Established ', socket.id)
-    socket.on('add_user', async function(data) {
+    socket.on('add_user', async function (data) {
       socket.username = data.username
       socket.room = data.website
 
@@ -94,10 +94,10 @@ io.sockets
       console.log('Number of users in', socket.room, ':', rooms[socket.room])
     })
 
-    socket.on('send_message', data => {
+    socket.on('send_message', (data) => {
       // tfjs toxicity model prediction
-      toxicity.load().then(model => {
-        model.classify(data.message).then(predictions => {
+      toxicity.load().then((model) => {
+        model.classify(data.message).then((predictions) => {
           if (predictions[predictions.length - 1].results[0].match) {
             console.log('Toxic message detected. Deleting now...')
             io.sockets.in(socket.room).emit('delete_message', {
@@ -115,7 +115,7 @@ io.sockets
       })
     })
 
-    socket.on('disconnect', data => {
+    socket.on('disconnect', (data) => {
       console.log('User Disconnected')
       rooms[data.website]--
       console.log('Number of users in', socket.room, ':', rooms[socket.room])
