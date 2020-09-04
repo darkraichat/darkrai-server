@@ -46,7 +46,7 @@ router.post('/register', (req, res) => {
     return User.create({
       username: req.body.username,
       password: makePassword(20),
-    }).then(async user => {
+    }).then(async (user) => {
       const token = jwt.sign(
         { username: user.username },
         process.env.SERVER_SECRET,
