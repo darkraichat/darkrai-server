@@ -20,6 +20,7 @@
     "lodash": "^4.17.20",
     "mongoose": "^5.10.3",
     "morgan": "^1.9.1",
+    "python-shell": "^2.0.2",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
