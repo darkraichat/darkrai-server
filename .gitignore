@@ -40,6 +40,9 @@ build
 # Dependency directories
 node_modules/
 jspm_packages/
+Lib
+Scripts
+
 
 # TypeScript v1 declaration files
 typings/
@@ -100,5 +103,5 @@ typings/
 .vscode
 
 #Python dependencies
-Lib/
+*.Lib/
 Scripts/
