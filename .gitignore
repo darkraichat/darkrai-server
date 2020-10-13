@@ -98,3 +98,7 @@ typings/
 
 # vscode settings
 .vscode
+
+#Python dependencies
+Lib/
+Scripts/
