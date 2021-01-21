@@ -20,7 +20,7 @@
     "lodash": "^4.17.20",
     "mongoose": "^5.10.3",
     "morgan": "^1.9.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.2",
