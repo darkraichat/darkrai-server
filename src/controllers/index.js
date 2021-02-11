@@ -1,6 +1,5 @@
 const Message = require('../models/message')
 const Room = require('../models/room')
-
 const addMessage = function (username, message, website) {
   const newMessage = {
     username,

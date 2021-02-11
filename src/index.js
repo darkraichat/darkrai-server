@@ -9,10 +9,10 @@ const jwt = require('jsonwebtoken')
 const Room = require('./models/room')
 const indexRoutes = require('./routes')
 const controllers = require('./controllers')
-const toxicity = require('@tensorflow-models/toxicity')
-
+const {PythonShell} =require('python-shell')
+//const toxicity = require('@tensorflow-models/toxicity')
 // tfjs node backend initialization
-require('@tensorflow/tfjs-node')
+// require('@tensorflow/tfjs-node')
 
 // Loading .env
 require('dotenv').config()
@@ -51,6 +51,7 @@ const io = socket(server)
 // JSON parser
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
 
 // Users count for each room
 const rooms = {}
@@ -95,24 +96,50 @@ io.sockets
     })
 
     socket.on('send_message', (data) => {
+      //console.log(socket.id);
       // tfjs toxicity model prediction
-      toxicity.load().then((model) => {
-        model.classify(data.message).then((predictions) => {
-          if (predictions[predictions.length - 1].results[0].match) {
-            console.log('Toxic message detected. Deleting now...')
-            io.sockets.in(socket.room).emit('delete_message', {
-              message: data.message,
-            })
-            controllers.updateMessage(data.message)
-          }
-        })
-      })
+      // toxicity.load().then((model) => {
+      //   model.classify(data.message).then((predictions) => {
+      //     if (predictions[predictions.length - 1].results[0].match) {
+      //       console.log('Toxic message detected. Deleting now...')
+      //       io.sockets.in(socket.room).emit('delete_message', {
+      //         message: data.message,
+      //       })
+      //       controllers.updateMessage(data.message)
+      //     }
+      //   })
+      // })
 
       controllers.addMessage(socket.username, data.message, socket.room)
       io.sockets.in(socket.room).emit('receive_message', {
         username: socket.username,
         message: data.message,
       })
+
+      // ChatBot code 
+      const check = data.message.toString();
+      if(check[0].toLowerCase()==='c' && check[1].toLowerCase()==='b' && check[2]==='-'){
+      const search = check.slice(3);
+      let options = { 
+        mode: 'text', 
+        pythonOptions: ['-u'], // get print results in real-time 
+        scriptPath: 'src/', //If you are having python_test.py script in same folder, then it's optional. 
+        args: [search] //An argument which can be accessed in the script using sys.argv[1] 
+      }; 
+      let msg='' // Chatbot response
+      PythonShell.run('chatBot.py', options, function (err, result){ 
+        if (err) res.send(err.message); 
+          const len = result.length;
+          const response = result[len-1];
+          msg = response.toString();
+          console.log('result: ', msg); 
+          io.sockets.in(socket.room).emit('receive_message',{
+            username: 'ChatBot',
+            message: msg
+          })
+        // res.send(response.toString()) 
+      })
+    }
     })
 
     socket.on('disconnect', (data) => {
